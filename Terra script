@@ -1,0 +1,32 @@
+#EC2 instance using AWS CLI
+aws ec2 run-instances --image-id ami-12345678 --count 1 --instance-type t2.micro --key-name MyKeyPair
+
+#Bash script to check the status of an EC2 instance
+#!/bin/bash
+INSTANCE_ID="i-1234567890abcdef0"
+STATUS=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "Reservations[*].Instances[*].State.Name" --output text)
+echo "Instance status: $STATUS"
+#Python script to list all S3 buckets
+import boto3
+
+s3 = boto3.client('s3')
+response = s3.list_buckets()
+
+for bucket in response['Buckets']:
+    print(f'Bucket Name: {bucket["Name"]}')
+#create a VPC with two subnets using CloudFormation
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+  MySubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.1.0/24
+  MySubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.2.0/24
