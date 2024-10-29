@@ -1,0 +1,38 @@
+terrform script for ec2
+# Specify the provider
+provider "aws" {
+  region = "us-west-2"  # Change to your desired AWS region
+}
+
+# Create a security group to allow SSH access
+resource "aws_security_group" "allow_ssh" {
+  name        = "allow_ssh"
+  description = "Allow SSH access"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH from anywhere (not recommended for production)
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # Allow all outbound traffic
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Create an EC2 instance
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"  # Replace with a valid AMI ID for your region
+  instance_type = "t2.micro"               # Instance type
+
+  # Associate the security group
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+
+  tags = {
+    Name = "MyExampleInstance"
+  }
+}
